@@ -59,17 +59,10 @@ class Actor {
 		if (item  instanceof Actor) {
 			if (item === this) {
 				return false;
-			} else if (this.left > item.right || this.right < item.left || this.top > item.bottom || this.bottom < item.top) {
+			} else if (this.top >= item.bottom || this.bottom <= item.top || this.left >= item.right || this.right <= item.left) {
 				return false;
-			} else if (this.top === item.bottom || this.bottom === item.top || this.right === item.left || this.left === item.right) {
-				return false;
-			} else if (this.top < item.top && this.bottom > item.bottom && this.left < item.left && this.right > item.right) {
-				return true;
-			} else if ((this.right > item.left && this.right < item.right) || (this.left > item.left && this.left < item.right) || 
-				(this.bottom > item.top && this.bottom < item.bottom) || (this.top > item.top && this.top < item.bottom)) {
-				return true;
 			} else {
-				return false;
+				return true;
 			}
 		} else {
 			throw new Error("Можно передать только объект типа Actor");
@@ -127,8 +120,6 @@ class Level {
 		if (item  instanceof Actor) {
 			if (this.grid === undefined) {
 				return undefined;
-			// } else if (this.actors.length === 1) {
-			// 	return undefined;
 			} else {
 				for (let i = 0; i < this.actors.length; i++) {
 					if (this.actors[i].isIntersect(item)) {
@@ -142,19 +133,4 @@ class Level {
 			throw new Error("Можно передать только объект типа Actor");
 		}
 	}
-
-	// obstacleAt(position, size) {
-	// 	if (position instanceof Vector && size instanceof Vector) {
-	// 		let item = new Actor(position, size);
-	// 		if (item.top < 0 || item.left < 0 || item.right > this.width) {
-	// 			return 'wall';
-	// 		} else if (item.bottom > this.height) {
-	// 			return 'lava';
-	// 		} else {
-	// 			return undefined;
-	// 		}
-	// 	} else {
-	// 		throw new Error("Можно передать только вектор типа Vector");
-	// 	}
-	// }
 }
