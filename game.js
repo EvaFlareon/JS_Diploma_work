@@ -7,13 +7,12 @@ class Vector {
 	}
 
 	plus(item) {
-		if (item instanceof Vector) {
-			let x = item.x + this.x;
-			let y = item.y + this.y;
-			return new Vector(x, y);
-		} else {
+		if (!(item instanceof Vector)) {
 			throw new Error("Можно прибавлять к вектору только вектор типа Vector");
 		}
+		let x = item.x + this.x;
+		let y = item.y + this.y;
+		return new Vector(x, y);
 	}
 	
 	times(num) {
@@ -25,14 +24,13 @@ class Vector {
 
 class Actor {
 	constructor(pos = new Vector(0, 0), size = new Vector(1, 1), speed = new Vector(0, 0)) {
-		if (pos instanceof Vector & size instanceof Vector & speed instanceof Vector) {
-			this.pos = pos;
-			this.size = size;
-			this.speed = speed;
-			this.act = function() {};
-		} else {
+		if (!(pos instanceof Vector & size instanceof Vector & speed instanceof Vector)) {
 			throw new Error("Можно передать только вектор типа Vector");
 		}
+		this.pos = pos;
+		this.size = size;
+		this.speed = speed;
+		this.act = function() {};
 	}
 
 	get type() {
@@ -56,22 +54,21 @@ class Actor {
 	}
 
 	isIntersect(item) {
-		if (item  instanceof Actor) {
-			if (item === this) {
-				return false;
-			} else if (this.top >= item.bottom || this.bottom <= item.top || this.left >= item.right || this.right <= item.left) {
-				return false;
-			} else {
-				return true;
-			}
-		} else {
+		if (!(item  instanceof Actor)) {
 			throw new Error("Можно передать только объект типа Actor");
+		}
+		if (item === this) {
+			return false;
+		} else if (this.top >= item.bottom || this.bottom <= item.top || this.left >= item.right || this.right <= item.left) {
+			return false;
+		} else {
+			return true;
 		}
 	}
 }
 
 class Level {
-	constructor(grid, actors) {
+	constructor(grid = [], actors = []) {
 		this.grid = grid;
 		this.actors = actors;
 		this.status = null;
@@ -79,7 +76,7 @@ class Level {
 	}
 
 	get height() {
-		if (this.grid === undefined) {
+		if (this.grid === []) {
 			return 0;
 		} else {
 			return this.grid.length;
@@ -87,7 +84,7 @@ class Level {
 	}
 
 	get width() {
-		if (this.grid === undefined) {
+		if (this.grid === []) {
 			return 0;
 		} else {
 			let max = 0;
@@ -117,20 +114,65 @@ class Level {
 	}
 
 	actorAt(item) {
-		if (item  instanceof Actor) {
-			if (this.grid === undefined) {
-				return undefined;
-			} else {
-				for (let i = 0; i < this.actors.length; i++) {
-					if (this.actors[i].isIntersect(item)) {
-						return this.actors[i];
-					} else {
-						return undefined;
-					}
+		if (!(item  instanceof Actor)) {
+			throw new Error("Можно передать только объект типа Actor");
+		}
+		const foundElement = this.actors.find(function (el) {
+			if (el instanceof Actor) {
+				return el.isIntersect(item) === true;
+			}
+		});
+		return foundElement;
+	}
+
+	obstacleAt(position, size) {
+		if (!(position instanceof Vector && size instanceof Vector)) {
+			throw new Error("Можно передать только вектор типа Vector");
+		}
+		let item = new Actor(position, size);
+		if (item.top < 0 || item.left < 0 || item.right > this.width) {
+			return 'wall';
+		} else if (item.bottom > this.height) {
+			return 'lava';
+		}
+		for (let i = 0; i < this.grid.length; i++) {
+			for (let j = 0; j < this.grid[i].length; j++) {
+				let grid = new Actor(new Vector(j, i));
+				if (grid.isIntersect(item)) {
+					return this.grid[i][j];
 				}
 			}
+		}
+	}
+
+	removeActor(item) {
+		const index = this.actors.findIndex( function (el) {
+			return el === item;
+		});
+		this.actors.splice(index, 1);
+	}
+
+	noMoreActors(item) {
+		const found = this.actors.filter( function (el) {
+			if (el) {
+				return el.type === item;
+			}
+		});
+		if (found.length === 0) {
+			return true;
 		} else {
-			throw new Error("Можно передать только объект типа Actor");
+			return false;
+		}
+	}
+
+	playerTouched(obstacle, user_actor = {}) {
+		if (obstacle === 'lava' || obstacle === 'fireball') {
+			this.status = 'lost';
+		} else if (obstacle === 'coin' && user_actor.type === 'coin') {
+			this.removeActor(user_actor);
+			if (this.noMoreActors('coin')) {
+				this.status = 'won';
+			}
 		}
 	}
 }
