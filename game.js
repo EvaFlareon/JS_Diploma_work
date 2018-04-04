@@ -30,7 +30,6 @@ class Actor {
 		this.pos = pos;
 		this.size = size;
 		this.speed = speed;
-		this.act = function() {};
 	}
 
 	get type() {
@@ -65,6 +64,8 @@ class Actor {
 			return true;
 		}
 	}
+
+	act() {}
 }
 
 class Level {
@@ -174,5 +175,65 @@ class Level {
 				this.status = 'won';
 			}
 		}
+	}
+}
+
+class LevelParser {
+	constructor(actorsDict) {
+		this.actorsDict = actorsDict;
+	}
+
+	actorFromSymbol(key) {
+		if (key === undefined) {
+			return undefined;
+		} else if (key in this.actorsDict) {
+			return this.actorsDict[key];
+		} else {
+			return undefined;
+		}
+	}
+
+	obstacleFromSymbol(obstacle) {
+		if (obstacle === 'x') {
+			return 'wall';
+		} else if (obstacle === '!') {
+			return 'lava';
+		} else {
+			return undefined;
+		}
+	}
+
+	createGrid(plan = []) {
+		if (plan.length === 0) {
+			return plan;
+		} else {
+			for (let i = 0; i < plan.length; i++) {
+				plan[i] = plan[i].split('');
+				for (let j = 0; j < plan[i].length; j++) {
+					plan[i][j] = this.obstacleFromSymbol(plan[i][j]);
+				}
+			}
+			return plan;
+		}
+	}
+
+	createActors(plan = []) {
+		let resultPlan = [];
+		for (let i = 0; i < plan.length; i++) {
+			for (let j = 0; j < plan[i].length; j++) {
+				if (plan[i][j] in this.actorsDict) {
+					if (typeof(this.actorsDict[plan[i][j]]) !== 'function') {
+						continue;
+					}
+					let newObj = new this.actorsDict[plan[i][j]](new Vector(j, i));
+					if (newObj instanceof Actor) {
+						resultPlan.push(newObj);
+					}
+				} else {
+					continue;
+				}
+			}
+		}
+		return resultPlan;
 	}
 }
