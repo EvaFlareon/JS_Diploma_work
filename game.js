@@ -179,7 +179,7 @@ class Level {
 }
 
 class LevelParser {
-	constructor(actorsDict) {
+	constructor(actorsDict = {}) {
 		this.actorsDict = actorsDict;
 	}
 
@@ -235,5 +235,11 @@ class LevelParser {
 			}
 		}
 		return resultPlan;
+	}
+
+	parse(plan) {
+		let param2 = this.createActors(plan);
+		let param1 = this.createGrid(plan);
+		return(new Level(param1, param2));
 	}
 }
