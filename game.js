@@ -10,14 +10,14 @@ class Vector {
 		if (!(item instanceof Vector)) {
 			throw new Error("Можно прибавлять к вектору только вектор типа Vector");
 		}
-		let x = item.x + this.x;
-		let y = item.y + this.y;
+		const x = item.x + this.x;
+		const y = item.y + this.y;
 		return new Vector(x, y);
 	}
 	
 	times(num) {
-		let x = this.x * num;
-		let y = this.y * num;
+		const x = this.x * num;
+		const y = this.y * num;
 		return new Vector(x, y);
 	}
 }
@@ -130,7 +130,7 @@ class Level {
 		if (!(position instanceof Vector && size instanceof Vector)) {
 			throw new Error("Можно передать только вектор типа Vector");
 		}
-		let item = new Actor(position, size);
+		const item = new Actor(position, size);
 		if (item.top < 0 || item.left < 0 || item.right > this.width) {
 			return 'wall';
 		} else if (item.bottom > this.height) {
@@ -218,14 +218,14 @@ class LevelParser {
 	}
 
 	createActors(plan = []) {
-		let resultPlan = [];
+		const resultPlan = [];
 		for (let i = 0; i < plan.length; i++) {
 			for (let j = 0; j < plan[i].length; j++) {
 				if (plan[i][j] in this.actorsDict) {
 					if (typeof(this.actorsDict[plan[i][j]]) !== 'function') {
 						continue;
 					}
-					let newObj = new this.actorsDict[plan[i][j]](new Vector(j, i));
+					const newObj = new this.actorsDict[plan[i][j]](new Vector(j, i));
 					if (newObj instanceof Actor) {
 						resultPlan.push(newObj);
 					}
@@ -238,8 +238,8 @@ class LevelParser {
 	}
 
 	parse(plan) {
-		let param2 = this.createActors(plan);
-		let param1 = this.createGrid(plan);
+		const param2 = this.createActors(plan);
+		const param1 = this.createGrid(plan);
 		return(new Level(param1, param2));
 	}
 }
@@ -254,7 +254,7 @@ class Fireball extends Actor {
 	}
 
 	getNextPosition(time = 1) {
-		let newPosition = new Vector(this.pos.x, this.pos.y);
+		const newPosition = new Vector(this.pos.x, this.pos.y);
 		newPosition.x = newPosition.x + this.speed.x * time;
 		newPosition.y = newPosition.y + this.speed.y * time;
 		return newPosition;
@@ -266,7 +266,7 @@ class Fireball extends Actor {
 	}
 
 	act(time = 1, plan = new Level()) {
-		let newPosition = this.getNextPosition(time);
+		const newPosition = this.getNextPosition(time);
 		if (plan.obstacleAt(newPosition, this.size) === undefined) {
 			this.pos = newPosition;
 		} else {
@@ -314,8 +314,8 @@ class FireRain extends Fireball {
 
 class Coin extends Actor {
 	constructor(pos = new Vector()) {
-		super(new Vector(pos.x + 0.2, pos.x + 0.1), new Vector(0.6, 0.6));
-		this.startPos = new Vector(pos.x + 0.2, pos.x + 0.1);
+		super(new Vector(pos.x + 0.2, pos.y + 0.1), new Vector(0.6, 0.6));
+		this.startPos = new Vector(pos.x + 0.2, pos.y + 0.1);
 		this.springSpeed = 8;
 		this.springDist = 0.07;
 		this.spring = Math.random() * (2 * Math.PI - 0) + 0;
@@ -330,7 +330,7 @@ class Coin extends Actor {
 	}
 
 	getSpringVector() {
-		let springVector = new Vector(0, Math.sin(this.spring) * this.springDist);
+		const springVector = new Vector(0, Math.sin(this.spring) * this.springDist);
 		return springVector;
 	}
 
