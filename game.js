@@ -221,36 +221,17 @@ class LevelParser {
 		const resultPlan = [];
 		for (let i = 0; i < plan.length; i++) {
 			for (let j = 0; j < plan[i].length; j++) {
-				// if (plan[i][j] in this.actorsDict) {
-					if (typeof(this.actorsDict[plan[i][j]]) !== 'function') {
-						continue;
-					}
-					const newObj = new this.actorsDict[plan[i][j]](new Vector(j, i));
-					if (newObj instanceof Actor) {
-						resultPlan.push(newObj);
-					}
-				// } else {
-				// 	continue;
-				// }
+				if (typeof(this.actorsDict[plan[i][j]]) !== 'function') {
+					continue;
+				}
+				const newObj = new this.actorsDict[plan[i][j]](new Vector(j, i));
+				if (newObj instanceof Actor) {
+					resultPlan.push(newObj);
+				}
 			}
 		}
 		return resultPlan;
 	}
-	// createActors(plan = [] ) {
-	// 	const resultPlan = [];
-	// 	for (let i = 0; i < plan.length; i++) {
-	// 		for (let j = 0; j < plan[i].length; j++) {
-	// 			const newObjSymbol = this.actorFromSymbol(plan[i][j]);
-	// 			if (typeof newObjSymbol === 'function') {
-	// 				const newObj = new newObjSymbol(new Vector(j, i));
-	// 				if (newObj instanceof Actor) {
-	// 					resultPlan.push(newObj);
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// 	return resultPlan;
-	// }
 
 	parse(plan) {
 		const param2 = this.createActors(plan);
