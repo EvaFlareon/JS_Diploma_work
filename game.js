@@ -133,13 +133,13 @@ class Level {
 		const item = new Actor(position, size);
 		if (item.top < 0 || item.left < 0 || item.right > this.width) {
 			return 'wall';
-		} else if (item.bottom > this.height) {
+		}
+		if (item.bottom > this.height) {
 			return 'lava';
 		}
-		for (let i = 0; i < this.grid.length; i++) {
-			for (let j = 0; j < this.grid[i].length; j++) {
-				let grid = new Actor(new Vector(j, i));
-				if (grid.isIntersect(item)) {
+		for (let i = Math.floor(item.top); i < Math.ceil(item.bottom); i++) {
+			for (let j = Math.floor(item.left); j < Math.ceil(item.right); j++) {
+				if (this.grid[i][j]) {
 					return this.grid[i][j];
 				}
 			}
@@ -221,7 +221,7 @@ class LevelParser {
 		const resultPlan = [];
 		for (let i = 0; i < plan.length; i++) {
 			for (let j = 0; j < plan[i].length; j++) {
-				if (plan[i][j] in this.actorsDict) {
+				// if (plan[i][j] in this.actorsDict) {
 					if (typeof(this.actorsDict[plan[i][j]]) !== 'function') {
 						continue;
 					}
@@ -229,13 +229,28 @@ class LevelParser {
 					if (newObj instanceof Actor) {
 						resultPlan.push(newObj);
 					}
-				} else {
-					continue;
-				}
+				// } else {
+				// 	continue;
+				// }
 			}
 		}
 		return resultPlan;
 	}
+	// createActors(plan = [] ) {
+	// 	const resultPlan = [];
+	// 	for (let i = 0; i < plan.length; i++) {
+	// 		for (let j = 0; j < plan[i].length; j++) {
+	// 			const newObjSymbol = this.actorFromSymbol(plan[i][j]);
+	// 			if (typeof newObjSymbol === 'function') {
+	// 				const newObj = new newObjSymbol(new Vector(j, i));
+	// 				if (newObj instanceof Actor) {
+	// 					resultPlan.push(newObj);
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// 	return resultPlan;
+	// }
 
 	parse(plan) {
 		const param2 = this.createActors(plan);
@@ -355,3 +370,19 @@ class Player extends Actor {
 		return 'player';
 	}
 }
+
+const actorDict = {
+  '@': Player,
+  'o': Coin,
+  '=': HorizontalFireball,
+  '|': VerticalFireball,
+  'v': FireRain  
+};
+
+const parser = new LevelParser(actorDict);
+
+loadLevels()
+  .then(schemas => { 
+  	return runGame(JSON.parse(schemas), parser, DOMDisplay);
+  })
+  .then(() => alert('Вы выиграли приз!'));
