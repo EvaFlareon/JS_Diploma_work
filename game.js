@@ -58,7 +58,11 @@ class Actor {
     }
     if (item === this) {
       return false;
-    } 
+    }
+
+    // здесь можно обратить условие и написать просто return ...
+    // чтобы обратить условие нужно || заменить на &&
+    // а операторы на противоположные <= на >, >= на <
     if (this.top >= item.bottom || this.bottom <= item.top || this.left >= item.right || this.right <= item.left) {
       return false;
     } else {
@@ -77,12 +81,14 @@ class Level {
     this.finishDelay = 1;
     this.height = this.grid.length;
     this.width = Math.max(0, ...grid.map(el => el.length));
+    // стрелочная функция короче
     this.player = this.actors.find(function (el) {
       return el.type === 'player';
     });
   }
 
   isFinished() {
+    // скобки можно убрать
     return (this.status !== null && this.finishDelay < 0);
   }
 
@@ -104,6 +110,7 @@ class Level {
     if (item.bottom > this.height) {
       return 'lava';
     }
+    // границы лучше вынести в переменные, чтобы не округлять каждый раз
     for (let i = Math.floor(item.top); i < Math.ceil(item.bottom); i++) {
       for (let j = Math.floor(item.left); j < Math.ceil(item.right); j++) {
         if (this.grid[i][j]) {
@@ -114,6 +121,7 @@ class Level {
   }
 
   removeActor(item) {
+    // поиск по массиву идёт 2 раза, может быть лучше просто проверить полученный индекс?
     if (this.actors.includes(item)) {
       const index = this.actors.indexOf(item);
       this.actors.splice(index, 1);
@@ -121,6 +129,7 @@ class Level {
   }
 
   noMoreActors(item) {
+    // стрелочная фукнция короче
     return !(this.actors.some(function(actor) {
       return actor.type === item;
     }));
@@ -140,6 +149,7 @@ class Level {
 
 class LevelParser {
   constructor(actorsDict = {}) {
+    // тут можно использовать оператор spread
     this.actorsDict = Object.assign({}, actorsDict);
   }
 
@@ -157,6 +167,7 @@ class LevelParser {
   }
 
   createGrid(plan = []) {
+    // в стрелочных функциях можно опустить фигурные скобки и return
     return plan.map(  (item) => {
       return item.split('').map(  (i) => {
         return this.obstacleFromSymbol(i);
