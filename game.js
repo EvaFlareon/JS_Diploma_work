@@ -114,8 +114,10 @@ class Level {
   }
 
   removeActor(item) {
-    const index = this.actors.indexOf(item);
-    this.actors.splice(index, 1);
+    if (this.actors.includes(item)) {
+      const index = this.actors.indexOf(item);
+      this.actors.splice(index, 1);
+    }
   }
 
   noMoreActors(item) {
@@ -180,9 +182,9 @@ class LevelParser {
   }
 
   parse(plan) {
-    const param2 = this.createActors(plan);
-    const param1 = this.createGrid(plan);
-    return(new Level(param1, param2));
+    const actors = this.createActors(plan);
+    const grid = this.createGrid(plan);
+    return(new Level(grid, actors));
   }
 }
 
@@ -215,19 +217,25 @@ class Fireball extends Actor {
 }
 
 class HorizontalFireball extends Fireball {
-  constructor(pos = new Vector(), size = new Vector(1, 1), speed = new Vector(2, 0)) {
+  constructor(pos = new Vector(0, 0)) {
+    const size = new Vector(1, 1);
+    const speed = new Vector(2, 0);
     super(pos, speed, size);
   }
 }
 
 class VerticalFireball extends Fireball {
-  constructor(pos = new Vector(), size = new Vector(1, 1), speed = new Vector(0, 2)) {
+  constructor(pos = new Vector(0, 0)) {
+    const size = new Vector(1, 1);
+    const speed = new Vector(0, 2);
     super(pos, speed, size);
   }
 }
 
 class FireRain extends Fireball {
-  constructor(pos = new Vector(), size = new Vector(1, 1), speed = new Vector(0, 3)) {
+  constructor(pos = new Vector(0, 0)) {
+    const size = new Vector(1, 1);
+    const speed = new Vector(0, 3);
     super(pos, speed, size);
     this.startPos = pos;
   }
@@ -238,12 +246,12 @@ class FireRain extends Fireball {
 }
 
 class Coin extends Actor {
-  constructor(pos = new Vector(), size = new Vector(1, 1), speed = new Vector(0, 0)) {
+  constructor(pos = new Vector(0, 0), size = new Vector(1, 1), speed = new Vector(0, 0)) {
     super(new Vector(pos.x + 0.2, pos.y + 0.1), new Vector(0.6, 0.6));
     this.startPos = new Vector(pos.x + 0.2, pos.y + 0.1);
     this.springSpeed = 8;
     this.springDist = 0.07;
-    this.spring = Math.random() * (2 * Math.PI - 0) + 0;
+    this.spring = Math.random() * 2 * Math.PI;
   }
 
   get type() {
@@ -270,7 +278,7 @@ class Coin extends Actor {
 }
 
 class Player extends Actor {
-  constructor(pos = new Vector()) {
+  constructor(pos = new Vector(0, 0)) {
     super(pos.plus(new Vector(0, -0.5)), new Vector(0.8, 1.5), new Vector(0, 0));
   }
 
