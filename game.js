@@ -59,15 +59,7 @@ class Actor {
     if (item === this) {
       return false;
     }
-
-    // здесь можно обратить условие и написать просто return ...
-    // чтобы обратить условие нужно || заменить на &&
-    // а операторы на противоположные <= на >, >= на <
-    if (this.top >= item.bottom || this.bottom <= item.top || this.left >= item.right || this.right <= item.left) {
-      return false;
-    } else {
-      return true;
-    }
+    return this.top < item.bottom && this.bottom > item.top && this.left < item.right && this.right > item.left
   }
 
   act() {}
@@ -81,15 +73,11 @@ class Level {
     this.finishDelay = 1;
     this.height = this.grid.length;
     this.width = Math.max(0, ...grid.map(el => el.length));
-    // стрелочная функция короче
-    this.player = this.actors.find(function (el) {
-      return el.type === 'player';
-    });
+    this.player = this.actors.find(el => el.type === 'player');
   }
 
   isFinished() {
-    // скобки можно убрать
-    return (this.status !== null && this.finishDelay < 0);
+    return this.status !== null && this.finishDelay < 0;
   }
 
   actorAt(item) {
@@ -110,9 +98,12 @@ class Level {
     if (item.bottom > this.height) {
       return 'lava';
     }
-    // границы лучше вынести в переменные, чтобы не округлять каждый раз
-    for (let i = Math.floor(item.top); i < Math.ceil(item.bottom); i++) {
-      for (let j = Math.floor(item.left); j < Math.ceil(item.right); j++) {
+    const top = Math.floor(item.top);
+    const bottom = Math.ceil(item.bottom);
+    const left = Math.floor(item.left);
+    const right = Math.ceil(item.right);
+    for (let i = top; i < bottom; i++) {
+      for (let j = left; j < right; j++) {
         if (this.grid[i][j]) {
           return this.grid[i][j];
         }
@@ -121,18 +112,14 @@ class Level {
   }
 
   removeActor(item) {
-    // поиск по массиву идёт 2 раза, может быть лучше просто проверить полученный индекс?
-    if (this.actors.includes(item)) {
-      const index = this.actors.indexOf(item);
+    const index = this.actors.indexOf(item);
+    if (index !== -1) {
       this.actors.splice(index, 1);
     }
   }
 
   noMoreActors(item) {
-    // стрелочная фукнция короче
-    return !(this.actors.some(function(actor) {
-      return actor.type === item;
-    }));
+    return !(this.actors.some(actor => actor.type === item));
   }
 
   playerTouched(obstacle, userActor = {}) {
@@ -149,8 +136,7 @@ class Level {
 
 class LevelParser {
   constructor(actorsDict = {}) {
-    // тут можно использовать оператор spread
-    this.actorsDict = Object.assign({}, actorsDict);
+    this.actorsDict = {...actorsDict};
   }
 
   actorFromSymbol(key) {
@@ -167,12 +153,7 @@ class LevelParser {
   }
 
   createGrid(plan = []) {
-    // в стрелочных функциях можно опустить фигурные скобки и return
-    return plan.map(  (item) => {
-      return item.split('').map(  (i) => {
-        return this.obstacleFromSymbol(i);
-      });
-    });
+    return plan.map((item) => item.split('').map((i) => this.obstacleFromSymbol(i)));
   }
 
   createActors(plan = []) {
