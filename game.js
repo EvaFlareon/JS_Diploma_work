@@ -104,8 +104,9 @@ class Level {
     const right = Math.ceil(item.right);
     for (let i = top; i < bottom; i++) {
       for (let j = left; j < right; j++) {
-        if (this.grid[i][j]) {
-          return this.grid[i][j];
+        const grid = this.grid[i][j];
+        if (grid) {
+          return grid;
         }
       }
     }
